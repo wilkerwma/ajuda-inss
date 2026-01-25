@@ -1,3 +1,5 @@
+import MarkdownContent from './markdown-content';
+
 type Message = {
     id: number;
     content: string;
@@ -23,7 +25,11 @@ export default function MessageList({ messages }: MessageListProps) {
                                 : 'bg-[#f53003] text-white dark:bg-[#FF4433]'
                         }`}
                     >
-                        <p className="text-sm leading-relaxed">{message.content}</p>
+                        {message.type === 'system' ? (
+                            <MarkdownContent content={message.content} />
+                        ) : (
+                            <p className="text-sm leading-relaxed">{message.content}</p>
+                        )}
                     </div>
                 </div>
             ))}

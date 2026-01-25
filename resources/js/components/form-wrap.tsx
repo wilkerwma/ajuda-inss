@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import MessageList, { type Message } from './message-list';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
-import axios from 'axios';
+import { router } from '@inertiajs/react';
 
 export default function FormWrap() {
     const [messages, setMessages] = useState<Message[]>([
@@ -20,8 +20,8 @@ export default function FormWrap() {
     useEffect(() => {
         const loadMessages = async () => {
             try {
-                const response = await axios.get('/messages');
-                const { messages: loadedMessages, session_id } = response.data;
+                const response = await fetch('/messages');
+                const { messages: loadedMessages, session_id } = await response.json();
                 
                 setSessionId(session_id);
                 
@@ -45,12 +45,20 @@ export default function FormWrap() {
             setInputValue('');
 
             try {
-                const response = await axios.post('/messages', {
-                    content: userMessageContent,
-                    session_id: sessionId,
+                const response = await fetch('/messages', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
+                    },
+                    body: JSON.stringify({
+                        content: userMessageContent,
+                        session_id: sessionId,
+                    }),
                 });
 
-                const { user_message, system_message, session_id: newSessionId } = response.data;
+                const data = await response.json();
+                const { user_message, system_message, session_id: newSessionId } = data;
                 
                 // Update session ID if it changed
                 if (newSessionId !== sessionId) {
@@ -65,13 +73,13 @@ export default function FormWrap() {
                 ]);
             } catch (error) {
                 console.error('Error sending message:', error);
-                // Add message locally on error
-                const newMessage: Message = {
-                    id: messages.length + 1,
-                    content: userMessageContent,
-                    type: 'user',
+                // Add error message
+                const errorMessage: Message = {
+                    id: messages.length + 2,
+                    content: 'Desculpe, ocorreu um erro ao processar sua mensagem. Por favor, tente novamente.',
+                    type: 'system',
                 };
-                setMessages(prev => [...prev, newMessage]);
+                setMessages(prev => [...prev, errorMessage]);
             } finally {
                 setIsLoading(false);
             }
@@ -89,12 +97,12 @@ export default function FormWrap() {
                         value={inputValue}
                         onChange={(e) => setInputValue(e.target.value)}
                         placeholder="Digite sua mensagem..."
-                        className="flex-1"
+                        className="flex-1 bg-white dark:bg-[#161615] dark:text-white"
                         disabled={isLoading}
                     />
                     <Button 
                         type="submit" 
-                        className="bg-[#f53003] hover:bg-[#d42a02] dark:bg-[#FF4433] dark:hover:bg-[#e63d2e]"
+                        className="bg-[#f53003] hover:bg-[#d42a02] dark:bg-[#FF4433] dark:hover:bg-[#e63d2e] text-white"
                         disabled={isLoading}
                     >
                         {isLoading ? 'Enviando...' : 'Enviar'}
