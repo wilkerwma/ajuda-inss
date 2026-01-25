@@ -1,14 +1,14 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import MessageList, { type Message } from './message-list';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
-import { router } from '@inertiajs/react';
 
 export default function FormWrap() {
     const [messages, setMessages] = useState<Message[]>([
         {
             id: 1,
-            content: 'Como podemos te ajudar? Pode começar descrevendo sua condição ou nos provendo o código CID.',
+            content:
+                'Como podemos te ajudar? Pode começar descrevendo sua condição ou nos provendo o código CID.',
             type: 'system',
         },
     ]);
@@ -21,10 +21,11 @@ export default function FormWrap() {
         const loadMessages = async () => {
             try {
                 const response = await fetch('/messages');
-                const { messages: loadedMessages, session_id } = await response.json();
-                
+                const { messages: loadedMessages, session_id } =
+                    await response.json();
+
                 setSessionId(session_id);
-                
+
                 if (loadedMessages.length > 0) {
                     setMessages(loadedMessages);
                 }
@@ -32,13 +33,13 @@ export default function FormWrap() {
                 console.error('Error loading messages:', error);
             }
         };
-        
+
         loadMessages();
     }, []);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        
+
         if (inputValue.trim() && !isLoading) {
             setIsLoading(true);
             const userMessageContent = inputValue;
@@ -49,7 +50,10 @@ export default function FormWrap() {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
+                        'X-CSRF-TOKEN':
+                            document
+                                .querySelector('meta[name="csrf-token"]')
+                                ?.getAttribute('content') || '',
                     },
                     body: JSON.stringify({
                         content: userMessageContent,
@@ -58,28 +62,29 @@ export default function FormWrap() {
                 });
 
                 const data = await response.json();
-                const { user_message, system_message, session_id: newSessionId } = data;
-                
+                const {
+                    user_message,
+                    system_message,
+                    session_id: newSessionId,
+                } = data;
+
                 // Update session ID if it changed
                 if (newSessionId !== sessionId) {
                     setSessionId(newSessionId);
                 }
 
                 // Add both user and system messages to the list
-                setMessages(prev => [
-                    ...prev,
-                    user_message,
-                    system_message,
-                ]);
+                setMessages((prev) => [...prev, user_message, system_message]);
             } catch (error) {
                 console.error('Error sending message:', error);
                 // Add error message
                 const errorMessage: Message = {
                     id: messages.length + 2,
-                    content: 'Desculpe, ocorreu um erro ao processar sua mensagem. Por favor, tente novamente.',
+                    content:
+                        'Desculpe, ocorreu um erro ao processar sua mensagem. Por favor, tente novamente.',
                     type: 'system',
                 };
-                setMessages(prev => [...prev, errorMessage]);
+                setMessages((prev) => [...prev, errorMessage]);
             } finally {
                 setIsLoading(false);
             }
@@ -87,10 +92,10 @@ export default function FormWrap() {
     };
 
     return (
-        <div className="w-full max-w-4xl mx-auto px-6 pb-12">
-            <div className="bg-white rounded-lg shadow-lg p-6 dark:bg-[#161615] dark:shadow-[inset_0px_0px_0px_1px_#fffaed2d]">
+        <div className="mx-auto w-full max-w-4xl px-6 pb-12">
+            <div className="rounded-lg bg-white p-6 shadow-lg dark:bg-[#161615] dark:shadow-[inset_0px_0px_0px_1px_#fffaed2d]">
                 <MessageList messages={messages} />
-                
+
                 <form onSubmit={handleSubmit} className="flex gap-2">
                     <Input
                         type="text"
@@ -100,9 +105,9 @@ export default function FormWrap() {
                         className="flex-1 bg-white dark:bg-[#161615] dark:text-white"
                         disabled={isLoading}
                     />
-                    <Button 
-                        type="submit" 
-                        className="bg-[#f53003] hover:bg-[#d42a02] dark:bg-[#FF4433] dark:hover:bg-[#e63d2e] text-white"
+                    <Button
+                        type="submit"
+                        className="bg-[#f53003] text-white hover:bg-[#d42a02] dark:bg-[#FF4433] dark:hover:bg-[#e63d2e]"
                         disabled={isLoading}
                     >
                         {isLoading ? 'Enviando...' : 'Enviar'}

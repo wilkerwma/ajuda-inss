@@ -1,9 +1,9 @@
+import AppearanceToggleDropdown from '@/components/appearance-dropdown';
+import FormWrap from '@/components/form-wrap';
+import HeroSection from '@/components/hero-section';
 import { dashboard, login, register } from '@/routes';
 import { type SharedData } from '@/types';
 import { Head, Link, usePage } from '@inertiajs/react';
-import HeroSection from '@/components/hero-section';
-import FormWrap from '@/components/form-wrap';
-import AppearanceToggleDropdown from '@/components/appearance-dropdown';
 
 export default function Welcome({
     canRegister = true,
@@ -52,7 +52,7 @@ export default function Welcome({
                         )}
                     </nav>
                 </header>
-                
+
                 <HeroSection />
                 <FormWrap />
             </div>

@@ -17,8 +17,11 @@ class ProcessCid10Command extends Command
     protected $description = 'Process CID-10 CSV file, split codes, generate embeddings, and save to database and JSON';
 
     private const CSV_PATH = 'database/seeders/cid-10.csv';
+
     private const JSON_OUTPUT_PATH = 'database/seeders/cid10_completo.json';
+
     private const EMBEDDING_API_URL = 'http://localhost:11434/api/embeddings';
+
     private const EMBEDDING_MODEL = 'nomic-embed-text';
 
     public function handle(): int
@@ -32,8 +35,9 @@ class ProcessCid10Command extends Command
 
         $csvPath = base_path(self::CSV_PATH);
 
-        if (!file_exists($csvPath)) {
+        if (! file_exists($csvPath)) {
             $this->error("CSV file not found at: {$csvPath}");
+
             return Command::FAILURE;
         }
 
@@ -42,14 +46,14 @@ class ProcessCid10Command extends Command
         $errorCount = 0;
 
         $this->info('Reading CSV file...');
-        
+
         $skipEmbeddings = $this->option('skip-embeddings');
         $limit = $this->option('limit') ? (int) $this->option('limit') : null;
-        
+
         if ($skipEmbeddings) {
             $this->warn('Skipping embedding generation (--skip-embeddings flag set)');
         }
-        
+
         if ($limit) {
             $this->info("Processing limited to {$limit} entries");
         }
@@ -57,9 +61,10 @@ class ProcessCid10Command extends Command
         $handle = fopen($csvPath, 'r');
         $header = fgetcsv($handle);
 
-        if (!$header || !in_array('CODE', $header) || !in_array('DESC', $header)) {
+        if (! $header || ! in_array('CODE', $header) || ! in_array('DESC', $header)) {
             $this->error('Invalid CSV format. Expected columns: DESC, CODE');
             fclose($handle);
+
             return Command::FAILURE;
         }
 
@@ -87,7 +92,7 @@ class ProcessCid10Command extends Command
                 if ($limit && $processedCount >= $limit) {
                     break 2; // Break out of both loops
                 }
-                
+
                 try {
                     // Generate embedding (skip if flag is set)
                     $embedding = $skipEmbeddings ? null : $this->generateEmbedding($code, $description);
@@ -140,10 +145,10 @@ class ProcessCid10Command extends Command
         file_put_contents($jsonPath, json_encode($results, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
 
         $this->newLine();
-        $this->info("✓ Processing complete!");
+        $this->info('✓ Processing complete!');
         $this->info("  - Processed: {$processedCount} entries");
         $this->info("  - Errors: {$errorCount}");
-        $this->info("  - Database: cid10_codes collection");
+        $this->info('  - Database: cid10_codes collection');
         $this->info("  - JSON output: {$jsonPath}");
 
         return Command::SUCCESS;
@@ -156,12 +161,12 @@ class ProcessCid10Command extends Command
     {
         // Replace different separators with a consistent delimiter
         $codes = preg_replace('/\s*-\s*/', '|', $codes);
-        
+
         // Split by the delimiter
         $splitCodes = array_filter(array_map('trim', explode('|', $codes)));
-        
+
         // Remove empty entries
-        return array_values(array_filter($splitCodes, fn($code) => !empty($code)));
+        return array_values(array_filter($splitCodes, fn ($code) => ! empty($code)));
     }
 
     /**
@@ -180,13 +185,16 @@ class ProcessCid10Command extends Command
 
             if ($response->successful()) {
                 $embedding = $response->json('embedding');
+
                 return $embedding ?: null;
             }
 
             $this->warn("\nFailed to generate embedding for {$code}. Using null.");
+
             return null;
         } catch (\Exception $e) {
-            $this->warn("\nEmbedding generation error for {$code}: " . $e->getMessage());
+            $this->warn("\nEmbedding generation error for {$code}: ".$e->getMessage());
+
             return null;
         }
     }

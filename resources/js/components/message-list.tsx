@@ -12,7 +12,7 @@ type MessageListProps = {
 
 export default function MessageList({ messages }: MessageListProps) {
     return (
-        <div className="flex flex-col gap-4 mb-4 max-h-96 overflow-y-auto">
+        <div className="mb-4 flex max-h-96 flex-col gap-4 overflow-y-auto">
             {messages.map((message) => (
                 <div
                     key={message.id}
@@ -28,7 +28,9 @@ export default function MessageList({ messages }: MessageListProps) {
                         {message.type === 'system' ? (
                             <MarkdownContent content={message.content} />
                         ) : (
-                            <p className="text-sm leading-relaxed">{message.content}</p>
+                            <p className="text-sm leading-relaxed">
+                                {message.content}
+                            </p>
                         )}
                     </div>
                 </div>
