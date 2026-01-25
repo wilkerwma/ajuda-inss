@@ -12,10 +12,10 @@ return new class extends Migration
     public function up(): void
     {
         Schema::connection('mongodb')->create('cid10_codes', function (Blueprint $collection) {
+            $collection->uuid('id');
             $collection->string('cid_code')->unique();
-            $collection->string('name');
-            $collection->text('plain_text_description');
-            $collection->string('bpc_eligibility');
+            $collection->string('description');
+            $collection->boolean('bpc_eligibility')->default(false);
             $collection->text('legal_notes')->nullable();
             $collection->json('embedding')->nullable();
             $collection->timestamps();
