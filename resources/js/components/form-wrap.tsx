@@ -13,7 +13,6 @@ export default function FormWrap() {
         },
     ]);
     const [inputValue, setInputValue] = useState('');
-    const [sessionId, setSessionId] = useState<string>('');
     const [isLoading, setIsLoading] = useState(false);
 
     // Load existing messages on mount
@@ -21,10 +20,7 @@ export default function FormWrap() {
         const loadMessages = async () => {
             try {
                 const response = await fetch('/messages');
-                const { messages: loadedMessages, session_id } =
-                    await response.json();
-
-                setSessionId(session_id);
+                const { messages: loadedMessages } = await response.json();
 
                 if (loadedMessages.length > 0) {
                     setMessages(loadedMessages);
@@ -57,21 +53,11 @@ export default function FormWrap() {
                     },
                     body: JSON.stringify({
                         content: userMessageContent,
-                        session_id: sessionId,
                     }),
                 });
 
                 const data = await response.json();
-                const {
-                    user_message,
-                    system_message,
-                    session_id: newSessionId,
-                } = data;
-
-                // Update session ID if it changed
-                if (newSessionId !== sessionId) {
-                    setSessionId(newSessionId);
-                }
+                const { user_message, system_message } = data;
 
                 // Add both user and system messages to the list
                 setMessages((prev) => [...prev, user_message, system_message]);

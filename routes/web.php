@@ -1,9 +1,16 @@
 <?php
 
+use App\Http\Controllers\ClearSessionController;
 use App\Http\Controllers\MessageController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Laravel\Fortify\Features;
+
+if (! app()->environment('production')) {
+    // Use explicit controller@method syntax to avoid "Invalid route action"
+    // errors when resolving the invokable ClearSessionController.
+    Route::get('/clear-session', [ClearSessionController::class, '__invoke']);
+}
 
 Route::get('/', function () {
     return Inertia::render('welcome', [
