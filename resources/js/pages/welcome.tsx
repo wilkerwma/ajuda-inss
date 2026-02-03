@@ -21,14 +21,14 @@ export default function Welcome({
                     rel="stylesheet"
                 />
             </Head>
-            <div className="flex min-h-screen flex-col items-center bg-[#FDFDFC] p-6 text-[#1b1b18] dark:bg-[#0a0a0a]">
-                <header className="mb-6 w-full max-w-4xl text-sm">
+            <div className="flex min-h-screen flex-col items-center bg-gradient-to-b from-[#eef3ff] via-[#dde7ff] to-[#f7f9ff] p-4 text-[#04152f] transition-colors duration-300 dark:bg-gradient-to-b dark:from-[#030712] dark:via-[#040a19] dark:to-[#02040b] dark:text-[#e6edff] sm:p-6">
+                <header className="mb-6 w-full max-w-6xl text-sm">
                     <nav className="flex items-center justify-end gap-2">
                         <AppearanceToggleDropdown />
                         {auth.user ? (
                             <Link
                                 href={dashboard()}
-                                className="inline-block rounded-sm border border-[#19140035] px-5 py-1.5 text-sm leading-normal text-[#1b1b18] hover:border-[#1915014a] dark:border-[#3E3E3A] dark:text-[#EDEDEC] dark:hover:border-[#62605b]"
+                                className="inline-block rounded-full border border-[#0d2c62]/30 bg-white/70 px-5 py-1.5 text-sm leading-normal text-[#04152f] shadow-sm backdrop-blur hover:border-[#0d2c62]/50 dark:border-[#3a4f7a] dark:bg-[#0f1f3c] dark:text-[#dfe7ff]"
                             >
                                 Dashboard
                             </Link>
@@ -36,14 +36,14 @@ export default function Welcome({
                             <>
                                 <Link
                                     href={login()}
-                                    className="inline-block rounded-sm border border-transparent px-5 py-1.5 text-sm leading-normal text-[#1b1b18] hover:border-[#19140035] dark:text-[#EDEDEC] dark:hover:border-[#3E3E3A]"
+                                    className="inline-block rounded-full border border-transparent px-5 py-1.5 text-sm leading-normal text-[#04152f] hover:border-[#0d2c62]/30 hover:bg-white/60 dark:text-[#dfe7ff]"
                                 >
                                     Entrar
                                 </Link>
                                 {canRegister && (
                                     <Link
                                         href={register()}
-                                        className="inline-block rounded-sm border border-[#19140035] px-5 py-1.5 text-sm leading-normal text-[#1b1b18] hover:border-[#1915014a] dark:border-[#3E3E3A] dark:text-[#EDEDEC] dark:hover:border-[#62605b]"
+                                        className="inline-block rounded-full border border-[#0d2c62]/30 px-5 py-1.5 text-sm leading-normal text-[#04152f] hover:border-[#0d2c62]/50 dark:border-[#3a4f7a] dark:text-[#dfe7ff]"
                                     >
                                         Cadastrar
                                     </Link>
@@ -53,8 +53,26 @@ export default function Welcome({
                     </nav>
                 </header>
 
-                <HeroSection />
-                <FormWrap />
+                <main className="w-full max-w-6xl space-y-10 lg:space-y-14">
+                    <HeroSection />
+
+                    <section className="mx-auto w-full max-w-3xl px-4 text-center text-base leading-relaxed text-[#0a2a52] sm:px-6 sm:text-lg dark:text-[#dbe5ff]">
+                        <div className="rounded-3xl border border-white/70 bg-white/70 px-6 py-6 shadow-[0_18px_55px_rgba(33,73,133,0.12)] backdrop-blur-md dark:border-white/10 dark:bg-[#050816]/80 dark:shadow-[0_22px_70px_rgba(0,0,0,0.85)]">
+                            <p>
+                                Criado para quem busca o Benefício de
+                                Prestação Continuada (BPC) ou o amparo da Lei
+                                Orgânica da Assistência Social (LOAS), o Ajuda
+                                INSS usa Inteligência Artificial para analisar
+                                seu cenário, indicar se você pode estar apto a
+                                receber o benefício e orientar os primeiros
+                                passos necessários, reunindo em um único lugar
+                                orientações práticas para agilizar seu pedido.
+                            </p>
+                        </div>
+                    </section>
+
+                    <FormWrap className="-mt-4 lg:-mt-10" />
+                </main>
             </div>
         </>
     );

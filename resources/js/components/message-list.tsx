@@ -12,17 +12,18 @@ type MessageListProps = {
 
 export default function MessageList({ messages }: MessageListProps) {
     return (
-        <div className="mb-4 flex max-h-96 flex-col gap-4 overflow-y-auto">
+        <div className="relative mb-6 flex max-h-96 flex-col gap-4 overflow-y-auto pr-2">
+            <div className="pointer-events-none absolute inset-0 rounded-2xl border border-white/40 shadow-[inset_0_8px_40px_rgba(34,92,200,0.3)] dark:border-white/5 dark:shadow-[inset_0_8px_40px_rgba(0,0,0,0.45)]" />
             {messages.map((message) => (
                 <div
                     key={message.id}
                     className={`flex ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}
                 >
                     <div
-                        className={`max-w-[80%] rounded-lg px-4 py-3 ${
+                        className={`max-w-[85%] rounded-2xl px-4 py-3 text-sm leading-relaxed shadow-lg shadow-black/5 transition-all duration-300 ${
                             message.type === 'system'
-                                ? 'bg-[#f5f5f5] text-[#1b1b18] dark:bg-[#2a2a2a] dark:text-[#EDEDEC]'
-                                : 'bg-[#f53003] text-white dark:bg-[#FF4433]'
+                                ? 'bg-white/90 text-[#0b1d3a] backdrop-blur dark:bg-[#0b1426] dark:text-[#f6f8ff]'
+                                : 'bg-gradient-to-r from-[#5b79ff] to-[#81a7ff] text-white drop-shadow-xl dark:from-[#4c8dff] dark:to-[#78a8ff]'
                         }`}
                     >
                         {message.type === 'system' ? (

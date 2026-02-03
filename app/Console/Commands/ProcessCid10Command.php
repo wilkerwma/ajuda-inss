@@ -70,6 +70,7 @@ class ProcessCid10Command extends Command
 
         $descIndex = array_search('DESC', $header);
         $codeIndex = array_search('CODE', $header);
+        $bpcIndex = array_search('BPC', $header);
 
         $bar = $this->output->createProgressBar();
         $bar->start();
@@ -80,6 +81,7 @@ class ProcessCid10Command extends Command
             }
             $description = isset($row[$descIndex]) ? trim($row[$descIndex]) : '';
             $codes = isset($row[$codeIndex]) ? trim($row[$codeIndex]) : '';
+            $bpcEligibility = isset($row[$bpcIndex]) ? filter_var($row[$bpcIndex], FILTER_VALIDATE_BOOLEAN) : false;
 
             if (empty($codes) || empty($description)) {
                 continue;
@@ -95,13 +97,13 @@ class ProcessCid10Command extends Command
 
                 try {
                     // Generate embedding (skip if flag is set)
-                    $embedding = $skipEmbeddings ? null : $this->generateEmbedding($code, $description);
+                    $embedding = $skipEmbeddings ? null : $this->generateEmbedding($code, $description, $bpcEligibility);
 
                     // Prepare data
                     $data = [
                         'cid_code' => $code,
                         'description' => $description,
-                        'bpc_eligibility' => false,
+                        'bpc_eligibility' => $bpcEligibility,
                         'legal_notes' => null,
                         'embedding' => $embedding,
                     ];
@@ -121,6 +123,7 @@ class ProcessCid10Command extends Command
                         'cid_code' => $code,
                         'description' => $description,
                         'embedding' => $embedding,
+                        'bpc_eligibility' => $bpcEligibility,
                     ];
 
                     $processedCount++;
@@ -172,11 +175,11 @@ class ProcessCid10Command extends Command
     /**
      * Generate embedding for a CID code and description
      */
-    private function generateEmbedding(string $code, string $description): ?array
+    private function generateEmbedding(string $code, string $description, bool $bpcEligibility): ?array
     {
         try {
             // Combine code and description for better context
-            $text = "CID-10 {$code}: {$description}";
+            $text = "CID-10 {$code}: {$description} - bpc_eligibility: {$bpcEligibility}";
 
             $response = Http::timeout(30)->post(self::EMBEDDING_API_URL, [
                 'model' => self::EMBEDDING_MODEL,

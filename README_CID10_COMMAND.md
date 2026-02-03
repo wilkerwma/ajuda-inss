@@ -71,26 +71,31 @@ Outras doenças infecciosas intestinais,A02- A04-A05- A07-A08
   {
     "cid_code": "A02",
     "description": "Outras doenças infecciosas intestinais",
+    "bpc_eligibility": false,
     "embedding": [0.123, -0.456, ...]
   },
   {
     "cid_code": "A04",
     "description": "Outras doenças infecciosas intestinais",
+    "bpc_eligibility": true,
     "embedding": [0.234, -0.567, ...]
   },
   {
     "cid_code": "A05",
     "description": "Outras doenças infecciosas intestinais",
+    "bpc_eligibility": false,
     "embedding": [0.345, -0.678, ...]
   },
   {
     "cid_code": "A07",
     "description": "Outras doenças infecciosas intestinais",
+    "bpc_eligibility": false,
     "embedding": [0.456, -0.789, ...]
   },
   {
     "cid_code": "A08",
     "description": "Outras doenças infecciosas intestinais",
+    "bpc_eligibility": false,
     "embedding": [0.567, -0.890, ...]
   }
 ]
