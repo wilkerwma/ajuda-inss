@@ -24,18 +24,40 @@ class RagService
      */
     public function searchRelevantCodes(string $query, int $topK = 5, float $minSimilarity = 0.5): Collection
     {
-        // Generate embedding for the query
+        $results = collect();
+        
+        // First, check if query contains a specific CID code (e.g., "CID S38", "S38", "CID-10 S38")
+        if (preg_match('/\b([A-Z]\d{2}(?:\.\d{1,2})?)\b/i', $query, $matches)) {
+            $cidCode = strtoupper($matches[1]);
+            $directMatch = Cid10Code::where('cid_code', $cidCode)->first();
+            
+            if ($directMatch && $directMatch->embedding) {
+                // Add the direct match with perfect similarity
+                $results->push([
+                    'cid_code' => $directMatch->cid_code,
+                    'description' => $directMatch->description,
+                    'bpc_eligibility' => $directMatch->bpc_eligibility,
+                    'legal_notes' => $directMatch->legal_notes,
+                    'similarity' => 1.0, // Perfect match
+                ]);
+                
+                // Reduce topK since we already have a direct match
+                $topK = max(1, $topK - 1);
+            }
+        }
+        
+        // Generate embedding for semantic search
         $queryEmbedding = $this->embeddingService->generateEmbedding($query);
 
         if (!$queryEmbedding) {
-            return collect();
+            return $results;
         }
 
         // Get all CID codes with embeddings
         $cid10Codes = Cid10Code::whereNotNull('embedding')->get();
 
         // Calculate similarity scores
-        $results = $cid10Codes->map(function ($code) use ($queryEmbedding) {
+        $semanticResults = $cid10Codes->map(function ($code) use ($queryEmbedding) {
             $similarity = $this->embeddingService->cosineSimilarity(
                 $queryEmbedding,
                 $code->embedding
@@ -53,8 +75,16 @@ class RagService
         ->sortByDesc('similarity')
         ->take($topK)
         ->values();
-
-        return $results;
+        
+        // Merge results, avoiding duplicates
+        $existingCodes = $results->pluck('cid_code')->toArray();
+        foreach ($semanticResults as $result) {
+            if (!in_array($result['cid_code'], $existingCodes)) {
+                $results->push($result);
+            }
+        }
+        
+        return $results->sortByDesc('similarity')->values();
     }
 
     /**
